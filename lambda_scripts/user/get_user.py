@@ -3,12 +3,13 @@ import requests as rq
 from datetime import datetime as dt
 from datetime import timedelta as td
 import boto3
+import os 
 
 s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
-    s3_bucket = event['bucket']
-    folder = event['folder']
+    s3_bucket = os.environ['bucket']
+    folder = os.environ['folder']
     try :
         date = event['date']
     except :
