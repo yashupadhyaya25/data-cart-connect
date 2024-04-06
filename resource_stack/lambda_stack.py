@@ -1,10 +1,17 @@
 from aws_cdk import (
-    Environment,
     Stack,
     aws_lambda as _lambda,
     aws_iam as iam
 )
 from constructs import Construct
+from configparser import ConfigParser
+
+## Import Env Variable For Lambdas
+Env = 'prod'
+config = ConfigParser()
+config.read('./config/lambda_config.ini')
+raw_bucket = config.get(Env,'raw_bucket')
+user_folder_path = config.get(Env,'lambda_user_raw_path')
 
 class AwsLambdaStack(Stack) :
     def __init__(self, scope: Construct, id: str,**kwargs) -> None:
@@ -29,7 +36,8 @@ class AwsLambdaStack(Stack) :
             runtime= _lambda.Runtime.PYTHON_3_12,
             role= lambda_role,
             function_name= 'get_user',
-            layers=[request_layer]
+            layers=[request_layer],
+            environment= {'bucket' : raw_bucket,'folder' : user_folder_path}
         )
 
 
