@@ -15,8 +15,8 @@ class AwsLambdaStack(Stack) :
             self,
             id = 'request_layer',
             description= 'request module for calling api',
-            layer_version_name= '2',
-            code=_lambda.Code.from_asset('./lambda_layers/request'),
+            layer_version_name= 'request',
+            code=_lambda.Code.from_asset('./lambda_layers/request/'),
             compatible_architectures= [_lambda.Architecture.ARM_64,_lambda.Architecture.X86_64],
             compatible_runtimes= [_lambda.Runtime.PYTHON_3_12]
         )
