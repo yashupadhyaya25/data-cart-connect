@@ -4,13 +4,12 @@ from aws_cdk import (
     aws_iam as iam
 )
 from constructs import Construct
-from configparser import ConfigParser
 from config.config import _config
 
 config_obj = _config('prod')
 config_values = config_obj.get_config()
 raw_bucket = config_values.get('raw_bucket')
-user_folder_path = config_values.get('lambda_user_raw_path')
+user_folder_path = config_values.get('lambda_user_raw_input_path')
 
 class AwsLambdaStack(Stack) :
     def __init__(self, scope: Construct, id: str,**kwargs) -> None:
