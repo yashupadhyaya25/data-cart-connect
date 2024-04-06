@@ -70,7 +70,7 @@ class AwsCodePipeline(Stack) :
 
         s3_deployment_wave = pipeline.add_wave("S3DeploymentWave")
 
-        deployment_wave.add_stage(S3DeployStage(
+        s3_deployment_wave.add_stage(S3DeployStage(
             self,'S3DeployStage'
             # env=(Environment(account='975050311718', region='eu-north-1'))
         ))
