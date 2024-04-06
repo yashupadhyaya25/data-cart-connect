@@ -7,6 +7,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 from resource_stack.lambda_stack import AwsLambdaStack
+from resource_stack.s3_stack import AwsS3BucketStack
 
 class LambdaDeployStage(Stage) :
     def __init__(self,scope : Construct, construct_id: str) :
@@ -15,6 +16,15 @@ class LambdaDeployStage(Stage) :
                       'LambdaStack',
                     #   env=env,
                       stack_name = 'lambda-stack-deploy'
+                      )
+
+class S3DeployStage(Stage) :
+    def __init__(self,scope : Construct, construct_id: str) :
+        super().__init__(scope,construct_id)
+        AwsS3BucketStack(self,
+                      'AwsS3BucketStack',
+                    #   env=env,
+                      stack_name = 'S3-stack-deploy'
                       )
 
 class AwsCodePipeline(Stack) :
@@ -55,5 +65,12 @@ class AwsCodePipeline(Stack) :
 
         deployment_wave.add_stage(LambdaDeployStage(
             self,'LambdaDeployStage'
+            # env=(Environment(account='975050311718', region='eu-north-1'))
+        ))
+
+        s3_deployment_wave = pipeline.add_wave("S3DeploymentWave")
+
+        deployment_wave.add_stage(S3DeployStage(
+            self,'S3DeployStage'
             # env=(Environment(account='975050311718', region='eu-north-1'))
         ))
