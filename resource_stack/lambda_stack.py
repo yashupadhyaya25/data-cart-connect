@@ -10,6 +10,8 @@ config_obj = _config('prod')
 config_values = config_obj.get_config()
 raw_bucket = config_values.get('raw_bucket')
 user_folder_path = config_values.get('lambda_user_raw_input_path')
+cart_folder_path = config_values.get('lambda_cart_raw_input_path')
+product_folder_path = config_values.get('lambda_product_raw_input_path')
 
 class AwsLambdaStack(Stack) :
     def __init__(self, scope: Construct, id: str,**kwargs) -> None:
@@ -38,4 +40,36 @@ class AwsLambdaStack(Stack) :
             environment= {'bucket' : raw_bucket,'folder' : user_folder_path}
         )
 
+        cart_lambda = _lambda.Function(
+            self,
+            id = 'cart',
+            code = _lambda.Code.from_asset('./lambda_scripts/cart'),
+            handler= 'get_cart.lambda_handler',
+            runtime= _lambda.Runtime.PYTHON_3_12,
+            role= lambda_role,
+            function_name= 'get_cart',
+            layers=[request_layer],
+            environment= {'bucket' : raw_bucket,'folder' : cart_folder_path}
+        )
+        
+        product_lambda = _lambda.Function(
+            self,
+            id = 'product',
+            code = _lambda.Code.from_asset('./lambda_scripts/product'),
+            handler= 'get_product.lambda_handler',
+            runtime= _lambda.Runtime.PYTHON_3_12,
+            role= lambda_role,
+            function_name= 'get_product',
+            layers=[request_layer],
+            environment= {'bucket' : raw_bucket,'folder' : product_folder_path}
+        )
 
+        check_object_exists_in_s3 = _lambda.Function(
+            self,
+            id = 'check_object_exists_in_s3',
+            code = _lambda.Code.from_asset('./lambda_scripts/check_object_exists_in_s3'),
+            handler= 'object_exists_in_s3.lambda_handler',
+            runtime= _lambda.Runtime.PYTHON_3_12,
+            role= lambda_role,
+            function_name= 'check_object_exists_in_s3'
+        )
