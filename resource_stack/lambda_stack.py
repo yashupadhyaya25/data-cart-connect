@@ -5,13 +5,12 @@ from aws_cdk import (
 )
 from constructs import Construct
 from configparser import ConfigParser
+from config.config import _config
 
-## Import Env Variable For Lambdas
-Env = 'prod'
-config = ConfigParser()
-config.read('./config/lambda_config.ini')
-raw_bucket = config.get(Env,'raw_bucket')
-user_folder_path = config.get(Env,'lambda_user_raw_path')
+config_obj = _config('prod')
+config_values = config_obj.get_config()
+raw_bucket = config_values.get('raw_bucket')
+user_folder_path = config_values.get('lambda_user_raw_path')
 
 class AwsLambdaStack(Stack) :
     def __init__(self, scope: Construct, id: str,**kwargs) -> None:
