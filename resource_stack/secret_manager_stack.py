@@ -3,6 +3,7 @@ from aws_cdk import (
     aws_secretsmanager as secret_manager
 )
 from constructs import Construct
+import json
 
 class AwsSecretManagerStack(Stack) :
     def __init__(self, scope: Construct, id: str,**kwargs) -> None:
@@ -13,8 +14,10 @@ class AwsSecretManagerStack(Stack) :
             id = 'SM_DataCartConnect',
             description= 'All S3 path and other config are store here',
             secret_name= 'SM_DataCartConnect',
-            secret_object_value= {
-                                    "product_raw_input_folder": "raw/product/input/",
+        ) 
+        data_cart_connect.secret_value_from_json(json_field=
+                                    """{
+                                    'product_raw_input_folder': 'raw/product/input/'
                                     "product_raw_issue_folder": "raw/product/issue/",
                                     "product_raw_archive_folder": "raw/product/archive/",
                                     "product_bronze_input_folder": "bronze/product/input/",
@@ -38,5 +41,5 @@ class AwsSecretManagerStack(Stack) :
                                     "raw_bucket" : "datacartconnectraw",
                                     "bronze_bucket" : "datacartconnectbronze",
                                     "silver_bucket" : "datacartconnectsilver"
-                                }
-        ) 
+                                }"""
+                                                 )
