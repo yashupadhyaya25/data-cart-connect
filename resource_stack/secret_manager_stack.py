@@ -14,9 +14,7 @@ class AwsSecretManagerStack(Stack) :
             id = 'SM_DataCartConnect',
             description= 'All S3 path and other config are store here',
             secret_name= 'SM_DataCartConnect',
-        ) 
-        data_cart_connect.secret_value_from_json(json_field=
-                                    """{
+            secret_object_value=secret_manager.SecretProps.secret_string_value("""{
                                     'product_raw_input_folder': 'raw/product/input/'
                                     "product_raw_issue_folder": "raw/product/issue/",
                                     "product_raw_archive_folder": "raw/product/archive/",
@@ -41,5 +39,5 @@ class AwsSecretManagerStack(Stack) :
                                     "raw_bucket" : "datacartconnectraw",
                                     "bronze_bucket" : "datacartconnectbronze",
                                     "silver_bucket" : "datacartconnectsilver"
-                                }"""
-                                                 )
+                                }""")
+        ) 
