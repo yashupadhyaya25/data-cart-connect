@@ -1,13 +1,13 @@
 from aws_cdk import (
     Stack,
     Stage,
-    Environment,
     pipelines,
     aws_codepipeline as codepipeline
 )
 from constructs import Construct
 from resource_stack.lambda_stack import AwsLambdaStack
 from resource_stack.s3_stack import AwsS3BucketStack
+from resource_stack.secret_manager_stack import AwsSecretManagerStack
 
 class LambdaDeployStage(Stage) :
     def __init__(self,scope : Construct, construct_id: str) :
@@ -25,6 +25,15 @@ class S3DeployStage(Stage) :
                       'AwsS3BucketStack',
                     #   env=env,
                       stack_name = 'S3-stack-deploy'
+                      )
+
+class SecretManagerDeployStage(Stage) :
+    def __init__(self,scope : Construct, construct_id: str) :
+        super().__init__(scope,construct_id)
+        AwsSecretManagerStack(self,
+                      'AwsSecretManagerStack',
+                    #   env=env,
+                      stack_name = 'secret-manager-stack-deploy'
                       )
 
 class AwsCodePipeline(Stack) :
@@ -72,5 +81,12 @@ class AwsCodePipeline(Stack) :
 
         s3_deployment_wave.add_stage(S3DeployStage(
             self,'S3DeployStage'
+            # env=(Environment(account='975050311718', region='eu-north-1'))
+        ))
+
+        secret_manager_deployment_wave = pipeline.add_wave("SecretManagerDeploymentWave")
+
+        secret_manager_deployment_wave.add_stage(SecretManagerDeployStage(
+            self,'SecretManagerDeployStage'
             # env=(Environment(account='975050311718', region='eu-north-1'))
         ))
