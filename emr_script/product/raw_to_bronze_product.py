@@ -10,26 +10,17 @@ spark = SparkSession \
        .appName("product") \
        .getOrCreate()
 
-json_agrs = sys.argv
-args_json = json.loads(json_agrs[-1].replace("'",'"'))
-secret_name = args_json.get('SecretName')
-region_name = args_json.get('RegionName')
-
 spark = SparkSession.builder.getOrCreate()
 session = boto3.session.Session()
+secret_name = "LY_Data_Cart"
+region_name = "us-east-2"
 client = session.client(service_name='secretsmanager', region_name=region_name)
-
 get_secret_value_response = client.get_secret_value(SecretId=secret_name)
 get_secret_value_response = json.loads(get_secret_value_response['SecretString'])
 raw_bucket = get_secret_value_response['raw_bucket']
 bronze_bucket = get_secret_value_response['bronze_bucket']
-raw_input_folder = get_secret_value_response['product_raw_input_folder']
-raw_archive_folder = get_secret_value_response['product_raw_archive_folder']
-raw_issue_folder = get_secret_value_response['product_raw_issue_folder']
-bronze_input_folder = get_secret_value_response['product_bronze_input_folder']
-
 s3_client = boto3.client('s3')
-file_list_in_raw = s3_client.list_objects_v2(Bucket=raw_bucket, Prefix=raw_input_folder, Delimiter='/')
+file_list_in_raw = s3_client.list_objects_v2(Bucket=raw_bucket, Prefix='data-cart/raw/product/input/', Delimiter='/')
 
 def column_validation(df):
   try :
@@ -39,16 +30,22 @@ def column_validation(df):
     description_flag = 'description' in columns
     image_flag = 'image' in columns
     price_flag = 'price' in columns
-    rating_flag = 'rating' in columns
+    rating_flag = 'rating.count' in columns
+    rating_flag = 'rating.rate' in columns
     title_flag = 'title' in columns
     return (id_flag and category_flag and description_flag and image_flag and price_flag and rating_flag and title_flag)
   except :
     return False
 
 def main(date) :
-  raw_file_name = 'product_daily_data_'+date.replace('-','')+'.json'
+  print(get_secret_value_response)
+  raw_input_folder = get_secret_value_response['product_raw_input_folder']
+  raw_archive_folder = get_secret_value_response['product_raw_archive_folder']
+  raw_issue_folder = get_secret_value_response['product_raw_issue_folder']
+  bronze_input_folder = get_secret_value_response['product_bronze_input_folder']
+  raw_file_name = 'product_daily_data_'+date.replace('-','')+'.csv'
   try :
-    product_df = spark.read.json('s3://'+raw_bucket+'/'+raw_input_folder+raw_file_name)
+    product_df = spark.read.option('header',True).csv('s3://'+raw_bucket+'/'+raw_input_folder+raw_file_name)
     validation_flag = column_validation(product_df)
     if validation_flag :
       product_df = product_df.select(
@@ -81,14 +78,12 @@ def main(date) :
     return {'StatusCode' : 400,'Message' : 'File Not Exists or '+str(e)}
 
 if __name__ == "__main__" :
+  try :
     json_agrs = sys.argv
-    args_json = json.loads(json_agrs[-1].replace("'",'"'))
-    try :
-      date = args_json.get('Date')
-      res = main(date)
-    except :
-      res = main(dt.strftime(dt.now(),'%Y-%m-%d'))
-    
-     
-
+    date_json = json.loads(json_agrs[-1].replace("'",'"'))
+    date = date_json.get('Date')
+    res = main(date)
+  except :
+     res = main(dt.strftime(dt.now(),'%Y-%m-%d'))
+  print(res)
 
