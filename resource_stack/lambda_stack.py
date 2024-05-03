@@ -64,12 +64,12 @@ class AwsLambdaStack(Stack) :
             environment= {'bucket' : raw_bucket,'folder' : product_folder_path}
         )
 
-        check_object_exists_in_s3 = _lambda.Function(
-            self,
-            id = 'check_object_exists_in_s3',
-            code = _lambda.Code.from_asset('./lambda_scripts/check_object_exists_in_s3'),
-            handler= 'object_exists_in_s3.lambda_handler',
-            runtime= _lambda.Runtime.PYTHON_3_12,
-            role= lambda_role,
-            function_name= 'check_object_exists_in_s3'
-        )
+        # check_object_exists_in_s3 = _lambda.Function(
+        #     self,
+        #     id = 'check_object_exists_in_s3',
+        #     code = _lambda.Code.from_asset('./lambda_scripts/check_object_exists_in_s3'),
+        #     handler= 'object_exists_in_s3.lambda_handler',
+        #     runtime= _lambda.Runtime.PYTHON_3_12,
+        #     role= lambda_role,
+        #     function_name= 'check_object_exists_in_s3'
+        # )

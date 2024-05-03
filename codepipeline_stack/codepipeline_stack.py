@@ -84,9 +84,9 @@ class AwsCodePipeline(Stack) :
             # env=(Environment(account='975050311718', region='eu-north-1'))
         ))
 
-        secret_manager_deployment_wave = pipeline.add_wave("SecretManagerDeploymentWave")
+        # secret_manager_deployment_wave = pipeline.add_wave("SecretManagerDeploymentWave")
 
-        secret_manager_deployment_wave.add_stage(SecretManagerDeployStage(
-            self,'SecretManagerDeployStage'
-            # env=(Environment(account='975050311718', region='eu-north-1'))
-        ))
+        # secret_manager_deployment_wave.add_stage(SecretManagerDeployStage(
+        #     self,'SecretManagerDeployStage'
+        #     # env=(Environment(account='975050311718', region='eu-north-1'))
+        # ))
