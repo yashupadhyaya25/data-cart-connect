@@ -20,6 +20,7 @@ def lambda_handler(event, context):
 
 def daily_cart_data(s3_bucket,folder,date):
     try :
+        # new lambda
         file_date = date
         api_url = 'https://fakestoreapi.com/carts?startdate='+date+'&enddate='+date
         response =rq.get(api_url)
