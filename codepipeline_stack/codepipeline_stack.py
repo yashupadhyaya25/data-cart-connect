@@ -90,3 +90,4 @@ class AwsCodePipeline(Stack) :
             self,'SecretManagerDeployStage'
             # env=(Environment(account='975050311718', region='eu-north-1'))
         ))
+        
